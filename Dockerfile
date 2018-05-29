@@ -1,12 +1,12 @@
 
 FROM openshift/base-centos7
 
-ENV RUST_VERSION=1.26.0 \
+ENV RUST_VERSION=nightly-2018-05-14 \
     CARGO_HOME=$HOME/.cargo \
     PATH=$HOME/.cargo/bin:$PATH
 
 LABEL io.k8s.description="Platform for building Rust Applications" \
-     io.k8s.display-name="Rust 1.26.0" \
+     io.k8s.display-name="Rust nightly-2018-05-14" \
      io.openshift.expose-services="8000:http" \
      io.openshift.tags="rust" \
      io.openshift.s2i.assemble-input-files="/opt/app-root/src/target/release"
@@ -15,7 +15,7 @@ RUN set -x \
     && yum install -y file \
     && curl -sSf https://static.rust-lang.org/rustup.sh > /tmp/rustup.sh \
     && chmod +x /tmp/rustup.sh \
-    && /tmp/rustup.sh  --disable-sudo --yes --revision="1.26.0" \
+    && /tmp/rustup.sh  --disable-sudo --yes --revision="nightly-2018-05-14" \
     && rm /tmp/rustup.sh \
     && yum clean all -y
 
