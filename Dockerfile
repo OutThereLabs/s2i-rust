@@ -12,7 +12,7 @@ LABEL io.k8s.description="Platform for building Rust Applications" \
      io.openshift.s2i.assemble-input-files="/opt/app-root/src/target/release"
 
 RUN set -x \
-    && yum install -y file \
+    && yum install -y file openssl-devel \
     && curl -sSf https://static.rust-lang.org/rustup.sh > /tmp/rustup.sh \
     && chmod +x /tmp/rustup.sh \
     && /tmp/rustup.sh  --disable-sudo --yes --revision="1.26.0" \
