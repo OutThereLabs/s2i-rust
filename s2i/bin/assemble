@@ -30,6 +30,7 @@ fi
 echo "---> Installing application source..."
 cp -Rf /tmp/src/. ./
 
+rm -rf $CARGO_CACHE/registry/index/*
 echo "---> Building application from source..."
 cargo build --release --locked
 
