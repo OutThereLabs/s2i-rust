@@ -1,23 +1,25 @@
 
 FROM openshift/base-centos7
 
-ENV RUST_VERSION=1.30.0 \
-    CARGO_HOME=$HOME/.cargo \
-    PATH=$HOME/.cargo/bin:$PATH
+ENV CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH \
+    RUST_VERSION=1.31.1
 
 LABEL io.k8s.description="Platform for building Rust Applications" \
-     io.k8s.display-name="Rust 1.30.0" \
+     io.k8s.display-name="Rust 1.31.0" \
      io.openshift.expose-services="8000:http" \
      io.openshift.tags="rust" \
      io.openshift.s2i.assemble-input-files="/opt/app-root/src/target/release"
 
-RUN set -x \
-    && yum install -y file openssl-devel \
-    && curl -sSf https://static.rust-lang.org/rustup.sh > /tmp/rustup.sh \
-    && chmod +x /tmp/rustup.sh \
-    && /tmp/rustup.sh  --disable-sudo --yes --revision="1.30.0" \
-    && rm /tmp/rustup.sh \
-    && yum clean all -y
+RUN set -eux; \
+    yum install -y file openssl-devel; \
+    curl https://static.rust-lang.org/rustup/archive/1.16.0/x86_64-unknown-linux-gnu/rustup-init -sSf > /tmp/rustup-init.sh; \
+    echo "2d4ddf4e53915a23dda722608ed24e5c3f29ea1688da55aa4e98765fc6223f71 /tmp/rustup-init.sh" | sha256sum -c -; \
+    chmod +x /tmp/rustup-init.sh; \
+    /tmp/rustup-init.sh -y --no-modify-path --default-toolchain $RUST_VERSION; \
+    chmod -R a+w $CARGO_HOME; \
+    rm /tmp/rustup-init.sh; \
+    yum clean all -y
 
 # Copy the S2I scripts to /usr/libexec/s2i, since openshift/base-centos7 image sets io.openshift.s2i.scripts-url label that way
 COPY ./s2i/bin/ /usr/libexec/s2i
