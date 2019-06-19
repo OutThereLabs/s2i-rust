@@ -12,27 +12,24 @@ if [[ "$1" == "-h" ]]; then
 	exec /usr/libexec/s2i/usage
 fi
 
-# Restore artifacts from the previous build (if they exist).
-#
+# Restore dependency download cache from the previous build (if it exists).
 if [ "$(ls /tmp/artifacts/ 2>/dev/null)" ]; then
-  echo "---> Restoring build artifacts..."
-  CARGO_CACHE=${CARGO_HOME:-$HOME/.cargo}
-  CARGO_CACHE=`readlink -f $CARGO_CACHE`
-  CARGO_BASENAME=`basename ${CARGO_CACHE}`
-  TARGET_DIR="target"
-  TARGET_DIR=`readlink -f $TARGET_DIR`
-  TARGET_BASENAME=`basename ${TARGET_DIR}`
-
-  cp -Rn "/tmp/artifacts/${CARGO_BASENAME}/." "${CARGO_CACHE}"
-  cp -Rn "/tmp/artifacts/${TARGET_BASENAME}/." "${TARGET_DIR}"
+  echo "---> Restoring Cargo cache..."
+  mv -n /tmp/artifacts/cargo/* $CARGO_HOME
 fi
 
 echo "---> Installing application source..."
-cp -Rf /tmp/src/. ./
+mv -f /tmp/src/* $HOME
+
+# Restore incremental build artifacts from the previous build (if they exist).
+if [ "$(ls /tmp/artifacts/ 2>/dev/null)" ]; then
+  echo "---> Restoring incremental build state..."
+  mv -f /tmp/artifacts/target .
+fi
 
 echo "---> Building application from source..."
 cargo build --release --locked
 
 # Fix source directory permissions
 echo "---> Fixing exec permissions..."
-fix-permissions ./
+fix-permissions ./target/release
