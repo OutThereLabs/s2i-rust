@@ -2,10 +2,10 @@ FROM openshift/base-centos7
 
 ENV CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
-    RUST_VERSION=1.41.1
+    RUST_VERSION=1.45.1
 
 LABEL io.k8s.description="Platform for building Rust Applications" \
-     io.k8s.display-name="Rust 1.41.1" \
+     io.k8s.display-name="Rust 1.45.1" \
      io.openshift.expose-services="8000:http" \
      io.openshift.tags="rust" \
      io.openshift.s2i.assemble-input-files="/opt/app-root/src/target/release"
